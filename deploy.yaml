@@ -1,0 +1,24 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  azureServiceConnection: '{azureServiceConnection}'
+  location: '{location}'
+  templateFile: 'main.bicep' 
+
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    workingDirectory: $(System.DefaultWorkingDirectory)
+    inlineScript: |
+      echo " Starting Bicep deployment..."  
+      az deployment sub create \
+        --name apim-deploy-$(Build.BuildId) \
+        --location $(location) \
+        --template-file $(templateFile)
